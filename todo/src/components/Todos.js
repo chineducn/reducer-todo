@@ -1,5 +1,6 @@
 //basic imports
 import React, { useReducer, useEffect } from 'react';
+import moment from 'moment';
 //initial state
 const todoList = window.localStorage.todos ? JSON.parse(window.localStorage.todos) : [];
 const todoItem = '';
@@ -85,17 +86,7 @@ const Todos = () => {
     //actual render
     return (
         <div>
-            <h3>Tasks</h3>
-            {
-                state.todoList.length
-                    ? state.todoList.map((todo) => 
-                        <div key={todo.id}>
-                            <span style={{textDecoration: todo.completed ? 'line-through' : 'none'}}>{todo.item}</span>
-                            <button onClick={toggleComplete(todo.id)} style={{display: todo.completed ? 'none' : 'inline'}}>Mark Done</button>
-                            <button onClick={toggleComplete(todo.id)} style={{display: todo.completed ? 'inline' : 'none'}}>Mark Undone</button>
-                        </div>)
-                    :<div>No Task</div>
-            }
+            <h1>ToDo List</h1>
             <form>
                 <input
                     type='text'
@@ -108,6 +99,18 @@ const Todos = () => {
             </form>
             <button onClick={clearAllTasks}>Clear All Tasks</button>
             <button onClick={clearCompleted}>Clear Completed Tasks</button>
+            <h3>Tasks</h3>
+            {
+                state.todoList.length
+                    ? state.todoList.map((todo) => 
+                        <div key={todo.id}>
+                            <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>Item: {todo.item}</span><br/>
+                            <span style={{display: todo.completed ? 'inline' : 'none'}}>Completed on: {moment().format('MMMM Do YYYY, h:mm:ss a')}</span><br/>
+                            <button onClick={toggleComplete(todo.id)} style={{display: todo.completed ? 'none' : 'inline'}}>Mark Done</button>
+                            <button onClick={toggleComplete(todo.id)} style={{display: todo.completed ? 'inline' : 'none'}}>Mark Undone</button>
+                        </div>)
+                    :<div>No Task</div>
+            }            
         </div>
     )
 };
