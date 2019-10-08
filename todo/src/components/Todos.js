@@ -1,84 +1,31 @@
 //basic imports
 import React, { useReducer, useEffect } from 'react';
+import * as TDR from '../reducers/todoReducer';
 import moment from 'moment';
-//initial state
-const todoList = window.localStorage.todos ? JSON.parse(window.localStorage.todos) : [];
-const todoItem = '';
-const initialState = { todoItem, todoList };
-//actions
-const ADD_TASK = 'addTask';
-const ON_INPUT_CHANGE = 'onInputChange';
-const CLEAR_ALL_TASKS = 'clearAllTasks';
-const TOGGLE_COMPLETED_STATUS = 'toggleCompletedStatus';
-const CLEAR_COMPLETED_TASKS = 'clearCompletedTasks';
-//reducer
-function reducer(state, action) {
-    switch (action.type) {
-        case ON_INPUT_CHANGE: {
-            return { ...state, todoItem: action.payload };
-        }
-        case ADD_TASK: {
-            const taskToAdd = {
-                id: Date.now(),
-                item: state.todoItem,
-                completed: false,
-            }
-            return {
-                todoItem: '',
-                todoList: [...state.todoList, taskToAdd]
-            }
-        }
-        case CLEAR_ALL_TASKS: {
-            return { todoItem: '', todoList: [] };
-        }
-        case TOGGLE_COMPLETED_STATUS: {
-            // debugger
-            return {
-                todoItem: '',
-                todoList: state.todoList.map(todo => {
-                    if (todo.id !== action.payload)
-                        return todo;
-                    return {
-                        id: todo.id,
-                        item: todo.item,
-                        completed: !todo.completed,
-                    }
-                }),
-            };
-        }
-        case CLEAR_COMPLETED_TASKS: {
-            return {
-                todoItem: '',
-                todoList: state.todoList.filter(todo => todo.completed === false),
-            }
-        }
-        default:
-            return state;
-    }
-};
 const Todos = () => {
-    const [state, dispatch] = useReducer(reducer, initialState);
+    console.log(moment().format('MMMM Do YYYY') < 'October 5th 2018');
+    const [state, dispatch] = useReducer(TDR.reducer, TDR.initialState);
     const onInputChange = event => {
         dispatch({
-            type: ON_INPUT_CHANGE,
+            type: TDR.ON_INPUT_CHANGE,
             payload: event.target.value,
         });
     };
     const addTask = event => {
         event.preventDefault();
-        dispatch({ type: ADD_TASK });
+        dispatch({ type: TDR.ADD_TASK });
     };
     const clearAllTasks = event => {
-        dispatch({ type: CLEAR_ALL_TASKS });
+        dispatch({ type: TDR.CLEAR_ALL_TASKS });
     };
     const toggleComplete = id => () => {
         dispatch({
-            type: TOGGLE_COMPLETED_STATUS,
+            type: TDR.TOGGLE_COMPLETED_STATUS,
             payload: id,
         })
     };
     const clearCompleted = () => {
-        dispatch({ type: CLEAR_COMPLETED_TASKS });
+        dispatch({ type: TDR.CLEAR_COMPLETED_TASKS });
     }
     useEffect(() => {
         window.localStorage.setItem('todos', JSON.stringify(state.todoList));
@@ -104,8 +51,16 @@ const Todos = () => {
                 state.todoList.length
                     ? state.todoList.map((todo) => 
                         <div key={todo.id}>
-                            <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>Item: {todo.item}</span><br/>
-                            <span style={{display: todo.completed ? 'inline' : 'none'}}>Completed on: {moment().format('MMMM Do YYYY, h:mm:ss a')}</span><br/>
+                            <span
+                                style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+                                Item: {todo.item}
+                            </span>
+                            <br />
+                            <span
+                                style={{ display: todo.completed ? 'inline' : 'none' }}>
+                                Completed on: {moment().format('MMMM Do YYYY, h:mm:ss a')}
+                            </span>
+                            <br />
                             <button onClick={toggleComplete(todo.id)} style={{display: todo.completed ? 'none' : 'inline'}}>Mark Done</button>
                             <button onClick={toggleComplete(todo.id)} style={{display: todo.completed ? 'inline' : 'none'}}>Mark Undone</button>
                         </div>)
